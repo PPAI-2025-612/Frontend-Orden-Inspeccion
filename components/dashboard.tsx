@@ -57,38 +57,6 @@ export default function Dashboard({ onNavigateToCierre }: DashboardProps) {
             </Card>
           </div>
 
-          {/* Acciones Secundarias */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            <Card className="cursor-not-allowed opacity-60">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <BarChart3 className="w-5 h-5" />
-                  Reportes
-                </CardTitle>
-                <CardDescription>Ver estadísticas y reportes de inspecciones</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" disabled className="w-full">
-                  Próximamente
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="cursor-not-allowed opacity-60">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Settings className="w-5 h-5" />
-                  Configuración
-                </CardTitle>
-                <CardDescription>Ajustar preferencias del sistema</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" disabled className="w-full">
-                  Próximamente
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Información del Usuario */}
           <div className="text-center text-sm text-muted-foreground space-y-1">
