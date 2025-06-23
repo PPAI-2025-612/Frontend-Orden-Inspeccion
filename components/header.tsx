@@ -3,10 +3,14 @@
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { LogOut, User } from "lucide-react"
+import { LogOut, User, ArrowLeft, Home } from "lucide-react"
 import { useAuth } from "../contexts/auth-context"
 
-export default function Header() {
+interface HeaderProps {
+  onBackToDashboard?: () => void
+}
+
+export default function Header({ onBackToDashboard }: HeaderProps) {
   const { usuario, logout } = useAuth()
 
   if (!usuario) return null
@@ -37,6 +41,13 @@ export default function Header() {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
+            {onBackToDashboard && (
+              <Button variant="ghost" size="sm" onClick={onBackToDashboard} className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Volver
+              </Button>
+            )}
+
             <div className="flex items-center gap-2">
               <User className="w-6 h-6 text-blue-600" />
               <h1 className="text-xl font-semibold text-gray-900">Sistema de Inspección</h1>
@@ -44,6 +55,7 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-4">
+
             <div className="flex items-center gap-3">
               <Avatar className="w-10 h-10">
                 <AvatarFallback className="bg-blue-100 text-blue-700">{getInitials(usuario.nombre)}</AvatarFallback>
