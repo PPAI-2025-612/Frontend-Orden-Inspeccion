@@ -1029,9 +1029,6 @@ video {
 .min-w-\[var\(--radix-select-trigger-width\)\] {
   min-width: var(--radix-select-trigger-width);
 }
-.max-w-2xl {
-  max-width: 42rem;
-}
 .max-w-4xl {
   max-width: 56rem;
 }
@@ -1118,9 +1115,6 @@ video {
 .cursor-default {
   cursor: default;
 }
-.cursor-not-allowed {
-  cursor: not-allowed;
-}
 .cursor-pointer {
   cursor: pointer;
 }
@@ -1183,9 +1177,6 @@ video {
 }
 .gap-4 {
   gap: 1rem;
-}
-.gap-6 {
-  gap: 1.5rem;
 }
 .space-x-1 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
