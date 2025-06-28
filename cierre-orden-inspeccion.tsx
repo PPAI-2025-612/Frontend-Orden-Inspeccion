@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { CheckCircle, XCircle, FileText, Calendar, User } from "lucide-react"
 import { useAuth } from "./contexts/auth-context"
 
-// Tipos de datos simulados
+// Formatos de los datos
 interface OrdenInspeccion {
   id: string
   numero: string
@@ -45,118 +45,30 @@ interface CierreOrdenInspeccionProps {
 
 export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccionProps) {
   const { usuario } = useAuth()
-  // Estados principales
+
   const [ordenes, setOrdenes] = useState<OrdenInspeccion[]>([])
   const [ordenSeleccionada, setOrdenSeleccionada] = useState<OrdenInspeccion | null>(null)
   const [observacionCierre, setObservacionCierre] = useState("")
   const [motivosTipo, setMotivosTipo] = useState<MotivoTipo[]>([])
   const [motivosSeleccionados, setMotivosSeleccionados] = useState<MotivoSeleccionado[]>([])
-
-  // Estados de UI
   const [cargando, setCargando] = useState(false)
-
   const [mensaje, setMensaje] = useState<{ tipo: "success" | "error"; texto: string } | null>(null)
 
-  // Datos simulados - en producción vendrían del backend
+  // Datos que vienen del back
   useEffect(() => {
-    // Intentar cargar órdenes desde localStorage primero
-    const ordenesGuardadas = localStorage.getItem("ordenes-inspeccion")
-    let ordenesSimuladas: OrdenInspeccion[] = []
-
-    if (ordenesGuardadas) {
-      try {
-        ordenesSimuladas = JSON.parse(ordenesGuardadas)
-      } catch (error) {
-        console.error("Error al cargar órdenes desde localStorage:", error)
-      }
-    }
-
-    // Si no hay órdenes guardadas, usar datos simulados
-    if (ordenesSimuladas.length === 0) {
-      ordenesSimuladas = [
-        {
-          id: "1",
-          numero: "ORD-001",
-          cliente: "Estación Sismo-CABA",
-          identificadorSismografo: "Sis-101",
-          fechaCreacion: "2024-01-15",
-          fechaFinalizacion: "2024-01-15",
-          responsable: "Juan Pérez",
-          estado: "Completada",
-          tareasCompletadas: 5,
-          totalTareas: 5,
-        },
-        {
-          id: "2",
-          numero: "ORD-002",
-          cliente: "Estación Sismo-MDZ",
-          identificadorSismografo: "Sis-102",
-          fechaCreacion: "2024-01-18",
-          fechaFinalizacion: "2024-01-19",
-          responsable: "María García",
-          estado: "Completada",
-          tareasCompletadas: 8,
-          totalTareas: 8,
-        },
-        {
-          id: "3",
-          numero: "ORD-003",
-          cliente: "Estación Sismo-Salta",
-          identificadorSismografo: "Sis-103",
-          fechaCreacion: "2024-01-20",
-          fechaFinalizacion: "2024-01-21",
-          responsable: "Carlos López",
-          estado: "Completada",
-          tareasCompletadas: 3,
-          totalTareas: 3,
-        },
-      ]
-
-      // Guardar datos simulados en localStorage
-      localStorage.setItem("ordenes-inspeccion", JSON.stringify(ordenesSimuladas))
-    }
-
-    const motivosSimulados: MotivoTipo[] = [
-      {
-        id: "1",
-        nombre: "Avería por vibración",
-        descripcion: "El equipo presentó fallas debido a vibraciones excesivas detectadas",
-      },
-      {
-        id: "2",
-        nombre: "Desgaste de componentes",
-        descripcion: "Componentes críticos muestran signos de desgaste significativo",
-      },
-      {
-        id: "3",
-        nombre: "Fallo en el sistema de registro",
-        descripcion: "El sistema de registro de datos presentó fallas o inconsistencias",
-      },
-      {
-        id: "4",
-        nombre: "Vandalismo",
-        descripcion: "Daños ocasionados por intervención externa no autorizada",
-      },
-      {
-        id: "5",
-        nombre: "Fallo en la fuente de alimentación",
-        descripcion: "La fuente de energía falló o fue interrumpida",
-      },
-      {
-        id: "6",
-        nombre: "Otro motivo",
-        descripcion: "Motivo no contemplado en las opciones anteriores. Especifique en el comentario.",
-      },
-    ]
-
-    setOrdenes(ordenesSimuladas)
-    setMotivosTipo(motivosSimulados)
+    setCargando(true)
+    Promise.all([fetch("/api/ordenes").then((r) => r.json()), fetch("/api/motivos").then((r) => r.json())])
+      .then(([ordenesData, motivosData]) => {
+        setOrdenes(ordenesData)
+        setMotivosTipo(motivosData)
+      })
+      .catch((e) => setMensaje({ tipo: "error", texto: "Error cargando datos" }))
+      .finally(() => setCargando(false))
   }, [])
 
   const handleSeleccionOrden = (ordenId: string) => {
-    const orden = ordenes.find((o) => o.id === ordenId)
-    setOrdenSeleccionada(orden || null)
-    // Limpiar formulario al cambiar de orden
+    const orden = ordenes.find((o) => o.id === ordenId) || null
+    setOrdenSeleccionada(orden)
     setObservacionCierre("")
     setMotivosSeleccionados([])
     setMensaje(null)
@@ -171,23 +83,16 @@ export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccio
   }
 
   const handleComentarioChange = (motivoId: string, comentario: string) => {
-    setMotivosSeleccionados((prev) => prev.map((m) => (m.id === motivoId ? { ...m, comentario } : m)))
+    setMotivosSeleccionados((prev) =>
+      prev.map((m) => (m.id === motivoId ? { ...m, comentario } : m)),
+    )
   }
 
   const validarFormulario = (): string | null => {
-    if (!observacionCierre.trim()) {
-      return "La observación de cierre es obligatoria"
-    }
-
-    if (motivosSeleccionados.length === 0) {
-      return "Debe seleccionar al menos un motivo"
-    }
-
+    if (!observacionCierre.trim()) return "La observación de cierre es obligatoria"
+    if (motivosSeleccionados.length === 0) return "Debe seleccionar al menos un motivo"
     const motivosSinComentario = motivosSeleccionados.filter((m) => !m.comentario.trim())
-    if (motivosSinComentario.length > 0) {
-      return "Todos los motivos seleccionados deben tener un comentario"
-    }
-
+    if (motivosSinComentario.length > 0) return "Todos los motivos seleccionados deben tener un comentario"
     return null
   }
 
@@ -198,50 +103,43 @@ export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccio
       return
     }
 
-    setCargando(true)
     setMensaje(null)
+    setCargando(true)
 
     try {
-      // Simular llamada al backend con datos del usuario
-      const datosEnvio = {
-        ordenId: ordenSeleccionada?.id,
-        responsableId: usuario?.id,
-        responsableNombre: usuario?.nombre,
-        observacionCierre,
-        motivosSeleccionados,
-        fechaCierre: new Date().toISOString(),
+      //Llamada al back
+      console.log("URL final:", window.location.origin + "/api/cerrar-orden");
+      const res = await fetch("http://localhost:8080/api/cerrar-orden", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ordenId: ordenSeleccionada?.id,
+          responsableId: usuario?.id,
+          responsableNombre: usuario?.nombre,
+          observacionCierre,
+          motivosSeleccionados,
+          fechaCierre: new Date().toISOString(),
+        }),
+      });
+
+
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(text)
       }
 
-      console.log("Datos enviados al backend:", datosEnvio)
+      const mensajeOk = await res.text()
+      setOrdenes((prev) => prev.filter((o) => o.id !== ordenSeleccionada?.id))
+      setMensaje({ tipo: "success", texto: mensajeOk })
 
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      // Eliminar la orden del localStorage
-      const ordenesActuales = JSON.parse(localStorage.getItem("ordenes-inspeccion") || "[]")
-      const ordenesFiltradas = ordenesActuales.filter((orden: OrdenInspeccion) => orden.id !== ordenSeleccionada?.id)
-      localStorage.setItem("ordenes-inspeccion", JSON.stringify(ordenesFiltradas))
-
-      // Actualizar el estado local
-      setOrdenes(ordenesFiltradas)
-
-      setMensaje({
-        tipo: "success",
-        texto: `Orden ${ordenSeleccionada?.numero} cerrada exitosamente por ${usuario?.nombre}`,
-      })
-
-      // Limpiar formulario después del éxito
       setTimeout(() => {
         setOrdenSeleccionada(null)
         setObservacionCierre("")
         setMotivosSeleccionados([])
         setMensaje(null)
       }, 3000)
-      
     } catch (error) {
-      setMensaje({
-        tipo: "error",
-        texto: "Error al cerrar la orden. Por favor, intente nuevamente.",
-      })
+      setMensaje({ tipo: "error", texto: (error as Error).message })
     } finally {
       setCargando(false)
     }
@@ -249,13 +147,11 @@ export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccio
 
   return (
     <div className="space-y-6">
-      {/* Encabezado */}
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Cierre de Orden de Inspección</h1>
         <p className="text-muted-foreground">Seleccione una orden completada y registre la información de cierre</p>
       </div>
 
-      {/* Selector de Orden */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -266,7 +162,7 @@ export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccio
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <Select onValueChange={handleSeleccionOrden}>
+            <Select onValueChange={handleSeleccionOrden} value={ordenSeleccionada?.id || ""}>
               <SelectTrigger>
                 <SelectValue placeholder="Seleccione una orden de inspección..." />
               </SelectTrigger>
@@ -385,7 +281,7 @@ export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccio
                 })}
               </div>
             </div>
-
+            
             {/* Mensajes */}
             {mensaje && (
               <Alert variant={mensaje.tipo === "error" ? "destructive" : "default"}>
@@ -394,7 +290,6 @@ export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccio
               </Alert>
             )}
 
-            {/* Botones de Acción */}
             <div className="flex justify-end gap-4 pt-4">
               {onCancel && (
                 <Button variant="outline" onClick={onCancel} size="lg" className="min-w-[150px]" disabled={cargando}>
