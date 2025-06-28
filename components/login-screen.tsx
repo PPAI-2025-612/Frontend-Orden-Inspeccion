@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Shield, LogIn } from "lucide-react"
+import { User, LogIn } from "lucide-react"
 import { useAuth } from "../contexts/auth-context"
 
 interface Usuario {
@@ -97,7 +97,7 @@ export default function LoginScreen() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-            <Shield className="w-8 h-8 text-white" />
+            <User className="w-8 h-8 text-white" />
           </div>
           <div>
             <CardTitle className="text-2xl">Sistema de Inspección</CardTitle>
