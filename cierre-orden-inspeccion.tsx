@@ -197,12 +197,6 @@ export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccio
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary">
-                    {ordenSeleccionada.tareasCompletadas}/{ordenSeleccionada.totalTareas} tareas completadas
-                  </Badge>
-                  <Badge variant="default">{ordenSeleccionada.estado}</Badge>
-                </div>
               </div>
             )}
           </div>
