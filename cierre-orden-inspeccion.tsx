@@ -197,6 +197,9 @@ export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccio
                     </span>
                   </div>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="default">{ordenSeleccionada.estado}</Badge>
+                </div>
               </div>
             )}
           </div>
