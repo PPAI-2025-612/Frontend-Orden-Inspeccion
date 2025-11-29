@@ -33,19 +33,7 @@ const usuariosDisponibles: Usuario[] = [
     id: "3",
     nombre: "Carlos López",
     email: "carlos.lopez@empresa.com",
-    rol: "Supervisor de Inspección",
-  },
-  {
-    id: "4",
-    nombre: "Ana Rodríguez",
-    email: "ana.rodriguez@empresa.com",
     rol: "Responsable de Inspección",
-  },
-  {
-    id: "5",
-    nombre: "Luis Martínez",
-    email: "luis.martinez@empresa.com",
-    rol: "Jefe de Inspección",
   },
 ]
 

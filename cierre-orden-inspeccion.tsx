@@ -137,7 +137,7 @@ export default function CierreOrdenInspeccion({ onCancel }: CierreOrdenInspeccio
         setObservacionCierre("")
         setMotivosSeleccionados([])
         setMensaje(null)
-      }, 3000)
+      }, 15000)
     } catch (error) {
       setMensaje({ tipo: "error", texto: (error as Error).message })
     } finally {
